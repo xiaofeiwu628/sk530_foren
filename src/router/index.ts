@@ -1,38 +1,61 @@
-import { createRouter, createWebHistory } from 'vue-router'
-import Home from '../views/Home.vue' // 假设你有一个 HomeView 组件
+import { createRouter, createWebHistory } from 'vue-router';
 
-
-// 1. 定义路由
-// 每个路由都需要映射到一个组件。
 const routes = [
   {
     path: '/',
-    name: 'root',
-    component: Home
+    redirect: '/announcements',
+  },
+  // ... 公开路由 ...
+  {
+    path: '/login',
+    name: 'Login',
+    component: () => import('../views/LoginView.vue'),
   },
   {
-    path: '/home',
-    name: 'home',
-    component: Home
+    path: '/announcements',
+    name: 'AnnouncementList',
+    component: () => import('../views/AnnouncementListView.vue'),
   },
+  {
+    path: '/announcements/:id',
+    name: 'AnnouncementDetail',
+    component: () => import('../views/AnnouncementDetailView.vue'),
+    props: true,
+  },
+  // --- 添加管理员路由 ---
+  {
+    path: '/admin/announcements',
+    name: 'AdminAnnouncementList',
+    component: () => import('../views/admin/AnnouncementAdminListView.vue'),
+  },
+  {
+    path: '/admin/announcements/new',
+    name: 'AdminAnnouncementNew',
+    component: () => import('../views/admin/AnnouncementNewView.vue'),
+  },
+  {
+    path: '/admin/announcements/edit/:id',
+    name: 'AdminAnnouncementEdit',
+    component: () => import('../views/admin/AnnouncementEditView.vue'),
+    props: true, // 将 :id 作为 prop 传递
+  },
+];
 
-  // 你可以在这里添加更多路由
-  // {
-  //   path: '/about',
-  //   name: 'about',
-  //   // 路由级代码拆分
-  //   // 这会为该路由生成一个单独的 chunk (About.[hash].js)
-  //   // 当路由被访问时才会懒加载。
-  //   component: () => import('../views/AboutView.vue')
-  // }
-]
-
-// 2. 创建 router 实例
 const router = createRouter({
-  // 使用 HTML5 History 模式，让 URL 更美观
-  history: createWebHistory(import.meta.env.BASE_URL),
-  routes, // 简写，相当于 `routes: routes`
-})
+  history: createWebHistory(),
+  routes,
+});
+// --- 全局前置守卫 ---
+router.beforeEach((to, from, next) => {
+  const token = localStorage.getItem('jwt_token');
+  const isAdminRoute = to.path.startsWith('/admin');
 
-// 3. 导出 router 实例，以便在 main.ts 中使用
-export default router
+  if (isAdminRoute && !token) {
+    // 如果访问的是管理员页面且没有 token，重定向到登录页
+    next({ name: 'Login', query: { redirect: to.fullPath } });
+  } else {
+    // 其他情况直接放行
+    next();
+  }
+});
+export default router;
