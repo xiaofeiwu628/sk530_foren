@@ -26,6 +26,7 @@
         <el-option label="普通" value="NORMAL" />
         <el-option label="重要" value="IMPORTANT" />
         <el-option label="紧急" value="URGENT" />
+        <el-option label="色色" value="URGENT" />
       </el-select>
     </el-form-item>
     <el-form-item label="状态" prop="status">

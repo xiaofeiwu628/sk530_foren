@@ -21,7 +21,7 @@ export interface Announcement {
     publishTime: string; // ISO 8601 格式的日期字符串
     expireTime: string | null;
     sticky: boolean;
-    creatorUsername: string;
+    creatorName: string;
     createdAt: string;
     attachments: Attachment[];
 }
@@ -35,4 +35,18 @@ export interface Page<T> {
     first: boolean;
     size: number;
     number: number; // 当前页码 (从0开始)
+}
+// 登录请求体
+export interface LoginRequest {
+  username: string;
+  password: string;
+}
+
+// 登录成功后的响应体
+// 确保这个接口是完整的，包含所有后端返回的字段
+export interface LoginResponse {
+  token: string;
+  username: string;
+  role: string;
+  expiresIn: number;
 }

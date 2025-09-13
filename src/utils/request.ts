@@ -1,6 +1,7 @@
 import axios from 'axios';
 // 将 ant-design-vue 替换为 element-plus
 import { ElMessage } from 'element-plus';
+import { getToken, processLogout } from '@/utils/auth';
 
 const service = axios.create({
   baseURL: '/api', // 基础路径，会自动被 vite 代理
@@ -10,7 +11,7 @@ const service = axios.create({
 // 请求拦截器
 service.interceptors.request.use(
   config => {
-    const token = localStorage.getItem('jwt_token'); // 从 localStorage 获取 token
+    const token = getToken();
     if (token) {
       config.headers['Authorization'] = `Bearer ${token}`;
     }
@@ -24,14 +25,24 @@ service.interceptors.request.use(
 // 响应拦截器
 service.interceptors.response.use(
   response => {
-    // 直接返回后端响应的 data 部分
     return response.data;
   },
   error => {
-    // 使用 ElMessage 替换 message
-    ElMessage.error(error.response?.data?.message || '请求失败');
+    if (error.response) {
+      const { status, data } = error.response;
+      // 3. 增加对 401/403 的处理，自动登出
+      if (status === 401 || status === 403) {
+        processLogout();
+        ElMessage.error(data?.message || '认证已过期或无权限，请重新登录');
+        // 使用 location.href 跳转以完全刷新应用状态
+        window.location.href = '/login';
+        return Promise.reject(new Error('认证失败'));
+      }
+      ElMessage.error(data?.message || '请求失败');
+    } else {
+      ElMessage.error('网络连接错误');
+    }
     return Promise.reject(error);
   }
 );
-
 export default service;

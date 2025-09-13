@@ -1,7 +1,7 @@
 <template>
   <div class="common-layout">
     <el-header class="page-header">
-      <span class="header-title">通知公告</span>
+      <span class="header-title">来点色图</span>
       <el-button type="primary" plain @click="goToLogin">管理员登录</el-button>
     </el-header>
 

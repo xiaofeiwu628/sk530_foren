@@ -1,24 +1,31 @@
 import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
-import path from 'path'
+import { fileURLToPath, URL } from 'node:url'
 
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [vue()],
   server: {
     proxy: {
-      // 将 /api 代理到后端服务
       '/api': {
-        target: 'http://localhost:8080', // 替换为您的后端服务地址
+        target: 'http://localhost:8080',
         changeOrigin: true,
-        // 如果后端接口路径本身不带 /api, 可以重写路径
-        // rewrite: (path) => path.replace(/^\/api/, '') 
       },
     },
+    // --- 添加以下配置 ---
+    host: true, // 监听所有地址，包括局域网和公网地址
+    hmr: {
+      protocol: 'ws',
+      host: 'localhost'
+    },
+    // 允许通过 ngrok 域名访问
+    allowedHosts: [
+      '9e7e4bd7a9e4.ngrok-free.app' // 将这里替换为您自己的 ngrok 域名
+    ],
   },
   resolve: {
     alias: {
-      '@': path.resolve(__dirname, './src'),
+      '@': fileURLToPath(new URL('./src', import.meta.url))
     },
   },
 })

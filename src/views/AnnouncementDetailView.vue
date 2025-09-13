@@ -14,7 +14,7 @@
           <div class="detail-meta">
             <span>发布于: {{ new Date(announcement.publishTime).toLocaleString() }}</span>
             <el-divider direction="vertical" />
-            <span>发布人: {{ announcement.creatorUsername }}</span>
+            <span>发布人: {{ announcement.creatorName }}</span>
           </div>
         </div>
 

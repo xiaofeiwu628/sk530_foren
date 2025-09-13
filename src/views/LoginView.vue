@@ -29,6 +29,7 @@ import { useRouter } from 'vue-router';
 import { ElMessage, type FormInstance, type FormRules } from 'element-plus';
 import { User, Lock } from '@element-plus/icons-vue';
 import { login } from '@/api/auth';
+import { processLogin, getUIRole } from '@/utils/auth';
 
 const router = useRouter();
 const loginFormRef = ref<FormInstance>();
@@ -51,9 +52,16 @@ const handleLogin = async () => {
       loading.value = true;
       try {
         const res = await login(loginForm);
-        localStorage.setItem('jwt_token', res.token); // 存储 Token
+        // 2. 使用 processLogin 统一存储
+        processLogin(res); 
         ElMessage.success('登录成功');
-        router.push({ name: 'AdminAnnouncementList' }); // 跳转到管理后台首页
+
+        // 3. 根据明文角色进行快速跳转（为了用户体验）
+        if (getUIRole() === 'ROLE_ADMIN') {
+          router.push({ name: 'AdminAnnouncementList' });
+        } else {
+          router.push({ name: 'AnnouncementList' });
+        }
       } finally {
         loading.value = false;
       }
