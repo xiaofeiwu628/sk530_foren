@@ -12,7 +12,7 @@
           <el-link type="primary" @click="viewDetail(row.id)">{{ row.title }}</el-link>
         </template>
       </el-table-column>
-      <el-table-column prop="creatorUsername" label="发布人" width="120" />
+      <el-table-column prop="creatorName" label="发布人" width="120" />
       <el-table-column prop="status" label="状态" width="100">
         <template #default="{ row }">
           <el-tag :type="row.status === 'PUBLISHED' ? 'success' : 'info'">

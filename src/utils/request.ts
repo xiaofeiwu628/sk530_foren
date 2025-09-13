@@ -4,7 +4,8 @@ import { ElMessage } from 'element-plus';
 import { getToken, processLogout } from '@/utils/auth';
 
 const service = axios.create({
-  baseURL: '/api', // 基础路径，会自动被 vite 代理
+  // baseURL: '/api', // 基础路径，会自动被 vite 代理
+  baseURL: import.meta.env.VITE_API_BASE_URL , // 使用环境变量
   timeout: 10000,
 });
 
